@@ -1,5 +1,6 @@
 package mate.academy.onlinebookstore;
 
+<<<<<<< HEAD
 import java.math.BigDecimal;
 import mate.academy.onlinebookstore.model.Book;
 import mate.academy.onlinebookstore.service.BookService;
@@ -13,11 +14,19 @@ import org.springframework.context.annotation.Bean;
 public class OnlineBookStoreApplication {
     @Autowired
     private BookService bookService;
+=======
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class OnlineBookStoreApplication {
+>>>>>>> origin/main
 
     public static void main(String[] args) {
         SpringApplication.run(OnlineBookStoreApplication.class, args);
     }
 
+<<<<<<< HEAD
     @Bean
     public CommandLineRunner commandLineRunner() {
         return args -> {
@@ -32,4 +41,6 @@ public class OnlineBookStoreApplication {
             System.out.println(bookService.findAll());
         };
     }
+=======
+>>>>>>> origin/main
 }
