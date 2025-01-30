@@ -1,17 +1,17 @@
-package mate.academy.onlinebookstore.repository.impl;
+package mate.academy.onlinebookstore.repository;
 
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import mate.academy.onlinebookstore.exception.DataProcessingException;
 import mate.academy.onlinebookstore.model.Book;
-import mate.academy.onlinebookstore.repository.BookRepository;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Repository;
 
-@Repository
 @RequiredArgsConstructor
+@Repository
 public class BookRepositoryImpl implements BookRepository {
     private final SessionFactory sessionFactory;
 
@@ -44,5 +44,16 @@ public class BookRepositoryImpl implements BookRepository {
         } catch (Exception e) {
             throw new DataProcessingException("Cannot find all books", e);
         }
+    }
+
+    @Override
+    public Optional<Book> findById(Long id) {
+        Book book;
+        try (Session session = sessionFactory.openSession()) {
+            book = session.find(Book.class, id);
+        } catch (Exception e) {
+            throw new DataProcessingException("Failed to retrieve books from the database", e);
+        }
+        return Optional.ofNullable(book);
     }
 }
