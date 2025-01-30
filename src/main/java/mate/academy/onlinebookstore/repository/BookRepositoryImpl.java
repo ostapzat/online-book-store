@@ -2,22 +2,18 @@ package mate.academy.onlinebookstore.repository;
 
 import java.util.List;
 import java.util.Optional;
-import mate.academy.onlinebookstore.exception.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import mate.academy.onlinebookstore.exception.DataProcessingException;
 import mate.academy.onlinebookstore.model.Book;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+@RequiredArgsConstructor
 @Repository
 public class BookRepositoryImpl implements BookRepository {
     private final SessionFactory sessionFactory;
-
-    @Autowired
-    public BookRepositoryImpl(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
 
     @Override
     public Book save(Book book) {
@@ -32,7 +28,7 @@ public class BookRepositoryImpl implements BookRepository {
             if (tx != null) {
                 tx.rollback();
             }
-            throw new RuntimeException("Cannot save book to DB", e);
+            throw new DataProcessingException("Cannot save book to DB", e);
         } finally {
             if (session != null) {
                 session.close();
@@ -43,14 +39,10 @@ public class BookRepositoryImpl implements BookRepository {
 
     @Override
     public List<Book> findAll() {
-        Session session = null;
-        try {
-            session = sessionFactory.openSession();
+        try (Session session = sessionFactory.openSession()) {
             return session.createQuery("from Book", Book.class).list();
-        } finally {
-            if (session != null) {
-                session.close();
-            }
+        } catch (Exception e) {
+            throw new DataProcessingException("Cannot find all books", e);
         }
     }
 
@@ -60,7 +52,7 @@ public class BookRepositoryImpl implements BookRepository {
         try (Session session = sessionFactory.openSession()) {
             book = session.find(Book.class, id);
         } catch (Exception e) {
-            throw new EntityNotFoundException("Failed to retrieve books from the database", e);
+            throw new DataProcessingException("Failed to retrieve books from the database", e);
         }
         return Optional.ofNullable(book);
     }
